@@ -62,6 +62,12 @@ export const shorten = async (request: Request, env: Env, ctx: ExecutionContext)
 		await env.REDIRECTS.put(shortcut.from, shortcut.dest, {
 			metadata: {
 				createdAt: new Date().toISOString(),
+				location: {
+					country: request.cf?.country,
+					city: request.cf?.city,
+					region: request.cf?.region,
+					colo: request.cf?.colo,
+				},
 			},
 		})
 
@@ -70,6 +76,7 @@ export const shorten = async (request: Request, env: Env, ctx: ExecutionContext)
 			headers: { 'content-type': 'application/json' },
 		})
 	} catch (err) {
+		console.error(err)
 		return new Response(JSON.stringify({ status: 'error', message: 'failed to set shortcut' }), {
 			status: 500,
 			headers: { 'content-type': 'application/json' },

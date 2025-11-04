@@ -1,6 +1,7 @@
 import { expand } from './handlers/expand'
 import { shortcut } from './handlers/shortcut'
 import { shorten } from './handlers/shorten'
+import { list } from './handlers/list'
 import { troll } from './handlers/troll'
 
 export default {
@@ -15,6 +16,8 @@ export default {
 			return shorten(request, env, ctx)
 		} else if (path.startsWith('/api/expand/')) {
 			return expand(request, env, ctx)
+		} else if (path.startsWith('/api/list')) {
+			return list(request, env, ctx)
 		} else if (['/.htaccess', '/wp-login.php'].includes(path)) {
 			return troll()
 		}
