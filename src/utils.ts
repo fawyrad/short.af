@@ -1,4 +1,4 @@
-// some useful functions
+// some useful functions and consts
 
 // allowed characters for a shortcut
 export const allowedCharset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_+.'
@@ -32,3 +32,31 @@ export const randomString = (length: number): string => {
 
 // check if a shortcut exists by checking if it's in the kv namespace
 export const checkExists = async (env: Env, shortcut: string): Promise<boolean> => (await env.REDIRECTS.get(shortcut)) !== null
+
+// list of 'well-known' urls to return trolling responses for
+export const knownUrls = [
+	// common config files
+	'/.env',
+	'/.htaccess',
+
+	// wordpress
+	'/wp-admin',
+	'/wp-content',
+	'/wp-cron.php',
+	'/wp-login.php',
+	'/wp-includes',
+	'/wp-good.php',
+	'/wp-blog.php',
+	'/wpfile.php',
+
+	// assorted paths
+	'/about.php',
+	'/admin.php',
+	'/login.php',
+	'/moon.php',
+	'/tiny.php',
+	'/tools.php',
+	'/worksec.php',
+	'/xmlrpc.php',
+	'/Marvins.php',
+]

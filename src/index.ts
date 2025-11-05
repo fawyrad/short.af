@@ -3,6 +3,7 @@ import { shortcut } from './handlers/shortcut'
 import { shorten } from './handlers/shorten'
 import { list } from './handlers/list'
 import { troll } from './handlers/troll'
+import { knownUrls } from './utils'
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
@@ -18,7 +19,7 @@ export default {
 			return expand(request, env, ctx)
 		} else if (path.startsWith('/api/list')) {
 			return list(request, env, ctx)
-		} else if (['/.htaccess', '/wp-login.php'].includes(path)) {
+		} else if (knownUrls.some((url) => path.startsWith(url))) {
 			return troll()
 		}
 
