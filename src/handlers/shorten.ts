@@ -1,4 +1,4 @@
-import { randomString, checkExists, allowedCharset, isValidHttpUrl } from '../utils'
+import { randomString, checkExists, allowedCharset, isValidHttpUrl, badDomains, badPrefixes } from '../utils'
 import { checkSafeBrowsing } from '../safeBrowsing'
 
 // shorten urls POSTed to /api/shorten
@@ -26,6 +26,15 @@ export const shorten = async (request: Request, env: Env, ctx: ExecutionContext)
 	if (!validFrom || !isValidHttpUrl(shortcut.dest)) {
 		return new Response(JSON.stringify({ status: 'error', message: 'invalid characters or url' }), {
 			status: 400,
+			headers: { 'content-type': 'application/json' },
+		})
+	}
+
+	// check if the destination is a bad behaver
+	const isBad = badDomains.includes(new URL(shortcut.dest).hostname) || badPrefixes.some((prefix) => shortcut.dest.startsWith(prefix))
+	if (isBad) {
+		return new Response(JSON.stringify({ status: 'error', message: 'server error' }), {
+			status: 500,
 			headers: { 'content-type': 'application/json' },
 		})
 	}

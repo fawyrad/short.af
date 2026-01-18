@@ -11,7 +11,7 @@ type Shortcut = {
 	}
 }
 
-// take a url (/api/list) and return a list of all shortcuts
+// take a url (/admin/list) and return a list of all shortcuts
 export const list = async (request: Request, env: Env): Promise<Response> => {
 	// @ts-expect-error we know the type of the response
 	const shortcuts: Shortcut[] = (await env.REDIRECTS.list()).keys

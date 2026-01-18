@@ -61,3 +61,19 @@ export const knownUrls = [
 	'/xmlrpc.php',
 	'/Marvins.php',
 ]
+
+// list of bad behavers that should be ignored
+export const badDomains = [
+	'appollo.jp',
+	'appollo-plus.com',
+	'ad-nex.com',
+	'al.fanza.co.jp',
+	'video.dmm.co.jp',
+	'al.dmm.co.jp',
+	'al.dmm.com',
+	'matomenever.com',
+	'www.mgstage.com',
+	'www.toindom.com',
+]
+
+export const badPrefixes = ['https://x.com/shirouto_ero_', 'https://x.com/tabegoro_tuma']
