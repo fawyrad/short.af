@@ -9,7 +9,9 @@ export const admin = async (request: Request, env: Env, ctx: ExecutionContext): 
 	const path = url.pathname
 
 	// pretend this endpoint doesn't exist
-	if (env.ADMIN_API_KEY !== new URL(request.url).searchParams.get('key')) {
+	const isAdmin =
+		env.ADMIN_API_KEY === new URL(request.url).searchParams.get('key') || request.headers.get('x-api-key') === env.ADMIN_API_KEY
+	if (!isAdmin) {
 		return new Response('not found', { status: 404 })
 	}
 

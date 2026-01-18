@@ -31,8 +31,6 @@ export const stats = async (request: Request, env: Env): Promise<Response> => {
 
 	stats.domains = Object.fromEntries(domains)
 
-	console.log(stats)
-
 	return new Response(JSON.stringify(stats), {
 		status: 200,
 		headers: { 'content-type': 'application/json' },
