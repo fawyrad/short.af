@@ -156,7 +156,6 @@
 					const resp = await req.json()
 
 					if (resp.status === 'success') {
-						console.log('shortcut deleted')
 						return true
 					}
 				} catch (err) {
@@ -166,7 +165,6 @@
 			}
 
 			const showSpinner = async (el, name) => {
-				console.log('show spinner')
 				const spinner = el.children[0]
 				spinner.classList.remove('hidden')
 
