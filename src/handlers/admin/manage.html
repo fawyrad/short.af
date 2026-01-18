@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+	<head>
+		<title>manage | short af baby!</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="/tailwind.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+		<style>
+			.animate-spin {
+				animation: spin 1s linear infinite;
+
+				@keyframes spin {
+					from {
+						transform: rotate(0deg);
+					}
+					to {
+						transform: rotate(360deg);
+					}
+				}
+			}
+		</style>
+	</head>
+	<body class="min-h-full">
+		<div id="head" class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+			<div class="mx-auto max-w-3xl">
+				<h1 class="text-3xl font-bold">manage | short.af</h1>
+				<h3 class="text-xl italic text-gray-700">> <span id="blurb">a simple url shortener</span></h3>
+			</div>
+		</div>
+		<div id="main" x-data="shortcuts" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div class="px-4 sm:px-6 lg:px-8">
+				<div class="sm:flex sm:items-center">
+					<div class="sm:flex-auto">
+						<h1 class="text-base font-semibold text-gray-900">
+							shortcuts<span x-show="count > 0"> (<span x-text="count"></span>)</span>
+						</h1>
+					</div>
+				</div>
+				<div class="mt-8 flow-root">
+					<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+						<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+							<table class="relative min-w-full divide-y divide-gray-300">
+								<thead>
+									<tr>
+										<th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">destination</th>
+										<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">shortcut</th>
+										<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">country</th>
+										<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">created</th>
+										<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">action</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-gray-200">
+									<template x-for="row in shortcuts">
+										<tr>
+											<td x-html="row.destHTML" class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0"></td>
+											<td x-text="row.name" class="px-3 py-4 text-sm whitespace-nowrap text-gray-500"></td>
+											<td x-text="row.location.country" class="px-3 py-4 text-sm whitespace-nowrap text-gray-500"></td>
+											<td x-text="row.createdAt" class="px-3 py-4 text-sm whitespace-nowrap text-gray-500"></td>
+											<td class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-0">
+												<button
+													class="inline-flex justify-center rounded-md border border-transparent bg-red-500 py-2 px-4 font-medium text-white shadow-sm hover:bg-red-600 ease-in-out duration-100 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+													@click="showSpinner($el, row.name)"
+												>
+													<svg
+														class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white"
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 24 24"
+													>
+														<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+														<path
+															class="opacity-75"
+															fill="currentColor"
+															d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+														></path>
+													</svg>
+													delete
+												</button>
+											</td>
+										</tr>
+									</template>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://unpkg.com/@popperjs/core@2"></script>
+		<script src="https://unpkg.com/tippy.js@6"></script>
+		<script>
+			document.addEventListener('alpine:init', () => {
+				Alpine.data('shortcuts', () => ({
+					shortcuts: [],
+					count: 0,
+
+					async init() {
+						this.shortcuts = await getShortcuts()
+						this.count = this.shortcuts.length
+						setTimeout(
+							() =>
+								tippy('[data-tippy-content]', {
+									interactive: true,
+									allowHTML: true,
+								}),
+							1000,
+						)
+					},
+				}))
+			})
+
+			const truncate = (str, n) => {
+				return str.length > n ? str.slice(0, n - 1) + '&hellip;' : str
+			}
+
+			const mkDestHTML = (dest) => {
+				const a = document.createElement('a')
+				a.href = dest
+				a.target = '_blank'
+				a.innerHTML = truncate(dest, 30)
+				a.setAttribute('data-tippy-content', dest)
+				return a.outerHTML
+			}
+
+			const getShortcuts = async () => {
+				// get key from url params
+				const key = new URL(window.location.href).searchParams.get('key')
+
+				// use key to get list of shortcuts
+				try {
+					const req = await fetch(`/admin/list?key=${key}`)
+					const resp = await req.json()
+
+					const formatted = resp
+						.filter((s) => s.location?.country)
+						.map((s) => ({
+							...s,
+							destHTML: mkDestHTML(s.dest),
+						}))
+
+					return formatted
+				} catch {
+					console.error('failed to fetch list')
+					return []
+				}
+			}
+
+			const deleteShortcut = async (name) => {
+				// get key from url params
+				const key = new URL(window.location.href).searchParams.get('key')
+
+				console.log('deleting', name)
+				try {
+					const req = await fetch(`/admin/delete?key=${key}&name=${name}`)
+					const resp = await req.json()
+
+					if (resp.status === 'success') {
+						console.log('shortcut deleted')
+						return true
+					}
+				} catch (err) {
+					console.error('failed to delete shortcut', err)
+					return false
+				}
+			}
+
+			const showSpinner = async (el, name) => {
+				console.log('show spinner')
+				const spinner = el.children[0]
+				spinner.classList.remove('hidden')
+
+				if (await deleteShortcut(name)) {
+					el.classList.add('hidden')
+				} else {
+					spinner.classList.add('hidden')
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -1,5 +1,6 @@
 import { deleteShortcut } from './delete'
 import { list } from './list'
+import { manage } from './manage'
 import { stats } from './stats'
 
 export const admin = async (request: Request, env: Env, ctx: ExecutionContext): Promise<Response> => {
@@ -15,6 +16,8 @@ export const admin = async (request: Request, env: Env, ctx: ExecutionContext): 
 		return await list(request, env)
 	} else if (path === '/admin/delete') {
 		return deleteShortcut(request, env)
+	} else if (path === '/admin/manage') {
+		return manage()
 	} else if (path === '/admin/stats') {
 		return stats(request, env)
 	}
