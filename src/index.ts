@@ -1,7 +1,7 @@
 import { expand } from './handlers/expand'
 import { shortcut } from './handlers/shortcut'
 import { shorten } from './handlers/shorten'
-import { list } from './handlers/list'
+import { admin } from './handlers/admin'
 import { troll } from './handlers/troll'
 import { knownUrls } from './utils'
 
@@ -17,8 +17,8 @@ export default {
 			return shorten(request, env, ctx)
 		} else if (path.startsWith('/api/expand/')) {
 			return expand(request, env, ctx)
-		} else if (path.startsWith('/api/list')) {
-			return list(request, env, ctx)
+		} else if (path.startsWith('/admin')) {
+			return admin(request, env, ctx)
 		} else if (knownUrls.some((url) => path.startsWith(url))) {
 			return troll()
 		}
