@@ -1,4 +1,6 @@
+import { deleteShortcut } from './delete'
 import { list } from './list'
+import { stats } from './stats'
 
 export const admin = async (request: Request, env: Env, ctx: ExecutionContext): Promise<Response> => {
 	const url = new URL(request.url)
@@ -11,6 +13,10 @@ export const admin = async (request: Request, env: Env, ctx: ExecutionContext): 
 
 	if (path === '/admin/list') {
 		return await list(request, env)
+	} else if (path === '/admin/delete') {
+		return deleteShortcut(request, env)
+	} else if (path === '/admin/stats') {
+		return stats(request, env)
 	}
 
 	return new Response('not found', { status: 404 })
